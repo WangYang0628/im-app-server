@@ -1,0 +1,131 @@
+<!-- status : 这个用于设置log4j2自身内部的信息输出,可以不设置,当设置成trace时,会看到log4j2内部各种详细输出 monitorInterval
+    : Log4j能够自动检测修改配置文件和重新配置本身, 设置间隔秒数。 注：本配置文件的目标是将不同级别的日志输出到不同文件，每小时生成一份log日志，
+    保留48份 -->
+<Configuration status="WARN" monitorInterval="300">
+    <properties>
+        <property name="LOG_HOME">../logs</property>
+        <property name="PATTERN_LAYOUT">%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</property>
+        <property name="CONSOLE_LAYOUT">%d{HH:mm:ss} %-5level %logger{36} - %msg%n</property>
+        <property name="INFO_LAYOUT">%d{HH:mm:ss} %-5level %logger{36} - %msg%n</property>
+        <property name="ERROR_LAYOUT">%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</property>
+        <property name="RECORD_LAYOUT">%d{HH:mm:ss} %msg%n</property>
+    </properties>
+
+    <appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${CONSOLE_LAYOUT}" />
+            <!-- 拒绝error级别 -->
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL" />
+            </Filters>
+        </Console>
+
+        <!-- 这个输出控制台的配置，这里输出error级别的信息到System.err，在eclipse控制台上看到的是红色文字 -->
+        <Console name="console_error" target="SYSTEM_ERR">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+            <PatternLayout pattern="${CONSOLE_LAYOUT}" />
+        </Console>
+
+        <!--log文件输出  -->
+        <RollingFile name="log" fileName="${LOG_HOME}/log.log"
+                     filePattern="${LOG_HOME}/log_%d{yyyy-MM-dd HH}.log" >
+            <!-- 输出格式 -->
+            <PatternLayout pattern="${INFO_LAYOUT}" />
+            <Filters>
+                <!-- 如果是error级别拒绝 -->
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <!-- 如果是debug\info\warn输出 -->
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <!-- 时间策略  interval 时间间隔 -->
+                <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+                <!-- 此处为每个文件大小策略限制，使用它一般会在文件中filePattern采用%i模式 -->
+                <!-- <SizeBasedTriggeringPolicy size="128KB" /> -->
+            </Policies>
+            <!-- 最大保留文件数量 -->
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_HOME}" maxDepth="1">
+                    <IfFileName glob="log_*.log" />
+                    <IfLastModified age="48H" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- error文件输出  -->
+        <RollingFile name="error" fileName="${LOG_HOME}/error.log"
+                     filePattern="${LOG_HOME}/error_%d{yyyy-MM}.log" >
+            <!-- 输出格式 -->
+            <PatternLayout pattern="${ERROR_LAYOUT}" />
+            <!-- 过滤 如果是error级别通过 其他级别不输出 -->
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <!-- 时间策略  interval 时间间隔 -->
+                <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+                <!-- 此处为每个文件大小策略限制，使用它一般会在文件中filePattern采用%i模式 -->
+                <!-- <SizeBasedTriggeringPolicy size="128KB" /> -->
+            </Policies>
+            <!-- 最大保留文件数量 -->
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_HOME}" maxDepth="1">
+                    <IfFileName glob="error_*.log" />
+                    <IfLastModified age="2M" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- 请求记录  -->
+        <RollingFile name="record" fileName="${LOG_HOME}/record.log"
+                     filePattern="${LOG_HOME}/record_%d{yyyy-MM-dd}.log" >
+            <!-- 输出格式 -->
+            <PatternLayout pattern="${RECORD_LAYOUT}" />
+            <Filters>
+                <!-- 如果是error级别拒绝 -->
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <!-- 如果是debug\info\warn输出 -->
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <!-- 时间策略  interval 时间间隔 -->
+                <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+                <!-- 此处为每个文件大小策略限制，使用它一般会在文件中filePattern采用%i模式 -->
+                <!-- <SizeBasedTriggeringPolicy size="128KB" /> -->
+            </Policies>
+            <!-- 最大保留文件数量 -->
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_HOME}" maxDepth="1">
+                    <IfFileName glob="record_*.log" />
+                    <IfLastModified age="3d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+        <!-- sql 输出到控制台和文件 -->
+        <logger name="cn.wildfirechat.app" level="debug" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="console_error"/>
+            <appender-ref ref="log"/>
+            <appender-ref ref="error"/>
+        </logger>
+        <logger name="cn.wildfirechat.app.aop" level="info" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="console_error"/>
+            <appender-ref ref="record"/>
+            <appender-ref ref="error"/>
+        </logger>
+
+
+        <!--<root level="info">
+            <appender-ref ref="console" />
+            <appender-ref ref="console_error" />
+            <appender-ref ref="log" />
+            <appender-ref ref="error" />
+        </root>-->
+    </loggers>
+</Configuration>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wildfirechat.app.mapper.GroupMapper" >
+  <resultMap id="BaseResultMap" type="cn.wildfirechat.app.entity.Group" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="_gid" property="gid" jdbcType="VARCHAR" />
+    <result column="_name" property="name" jdbcType="VARCHAR" />
+    <result column="_portrait" property="portrait" jdbcType="VARCHAR" />
+    <result column="_owner" property="owner" jdbcType="VARCHAR" />
+    <result column="_type" property="type" jdbcType="TINYINT" />
+    <result column="_dt" property="dt" jdbcType="BIGINT" />
+    <result column="_member_count" property="memberCount" jdbcType="INTEGER" />
+    <result column="_member_dt" property="memberDt" jdbcType="BIGINT" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="cn.wildfirechat.app.entity.Group" extends="BaseResultMap" >
+    <result column="_extra" property="extra" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, _gid, _name, _portrait, _owner, _type, _dt, _member_count, _member_dt
+  </sql>
+  <sql id="Blob_Column_List" >
+    _extra
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_group
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_group
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.wildfirechat.app.entity.Group" >
+    insert into t_group (id, _gid, _name, 
+      _portrait, _owner, _type, 
+      _dt, _member_count, _member_dt, 
+      _extra)
+    values (#{id,jdbcType=INTEGER}, #{gid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{portrait,jdbcType=VARCHAR}, #{owner,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, 
+      #{dt,jdbcType=BIGINT}, #{memberCount,jdbcType=INTEGER}, #{memberDt,jdbcType=BIGINT}, 
+      #{extra,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.wildfirechat.app.entity.Group" >
+    insert into t_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="gid != null" >
+        _gid,
+      </if>
+      <if test="name != null" >
+        _name,
+      </if>
+      <if test="portrait != null" >
+        _portrait,
+      </if>
+      <if test="owner != null" >
+        _owner,
+      </if>
+      <if test="type != null" >
+        _type,
+      </if>
+      <if test="dt != null" >
+        _dt,
+      </if>
+      <if test="memberCount != null" >
+        _member_count,
+      </if>
+      <if test="memberDt != null" >
+        _member_dt,
+      </if>
+      <if test="extra != null" >
+        _extra,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="gid != null" >
+        #{gid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="portrait != null" >
+        #{portrait,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null" >
+        #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="dt != null" >
+        #{dt,jdbcType=BIGINT},
+      </if>
+      <if test="memberCount != null" >
+        #{memberCount,jdbcType=INTEGER},
+      </if>
+      <if test="memberDt != null" >
+        #{memberDt,jdbcType=BIGINT},
+      </if>
+      <if test="extra != null" >
+        #{extra,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.wildfirechat.app.entity.Group" >
+    update t_group
+    <set >
+      <if test="gid != null" >
+        _gid = #{gid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        _name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="portrait != null" >
+        _portrait = #{portrait,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null" >
+        _owner = #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        _type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="dt != null" >
+        _dt = #{dt,jdbcType=BIGINT},
+      </if>
+      <if test="memberCount != null" >
+        _member_count = #{memberCount,jdbcType=INTEGER},
+      </if>
+      <if test="memberDt != null" >
+        _member_dt = #{memberDt,jdbcType=BIGINT},
+      </if>
+      <if test="extra != null" >
+        _extra = #{extra,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="cn.wildfirechat.app.entity.Group" >
+    update t_group
+    set _gid = #{gid,jdbcType=VARCHAR},
+      _name = #{name,jdbcType=VARCHAR},
+      _portrait = #{portrait,jdbcType=VARCHAR},
+      _owner = #{owner,jdbcType=VARCHAR},
+      _type = #{type,jdbcType=TINYINT},
+      _dt = #{dt,jdbcType=BIGINT},
+      _member_count = #{memberCount,jdbcType=INTEGER},
+      _member_dt = #{memberDt,jdbcType=BIGINT},
+      _extra = #{extra,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.wildfirechat.app.entity.Group" >
+    update t_group
+    set _gid = #{gid,jdbcType=VARCHAR},
+      _name = #{name,jdbcType=VARCHAR},
+      _portrait = #{portrait,jdbcType=VARCHAR},
+      _owner = #{owner,jdbcType=VARCHAR},
+      _type = #{type,jdbcType=TINYINT},
+      _dt = #{dt,jdbcType=BIGINT},
+      _member_count = #{memberCount,jdbcType=INTEGER},
+      _member_dt = #{memberDt,jdbcType=BIGINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
